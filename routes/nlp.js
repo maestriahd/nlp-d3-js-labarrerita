@@ -5,12 +5,13 @@ const router = express.Router();
 const nlp = require('compromise');
 // textos de prueba
 const corpus = require('nlp-corpus');
+const fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res) {
   // obtiene un texto aleatorio de discursos presidenciales
   var txt = corpus.sotu.random();
-
+var txt = fs.readFileSync (__dirname+'/TareaHerramientas.txt', 'utf8')
   // entrega el texto al motor de NLP
   var r = nlp(txt);
   // extrae las personas del texto
@@ -22,17 +23,20 @@ router.get('/', function(req, res) {
 
   // extrae los sustantivos
   var nouns = r.nouns();
+  nouns.unique();
+
+  console.log(people.out('array'));
 
   // hace el render de la vista entregando el texto, la lista de personas
   // y sustantivos
   res.render('nlp', {
     txt: txt,
     people: {
-      list: people.list,
+      list: people.out('array'),
       length: people.list.length
     },
     nouns: {
-      list: nouns.list,
+      list: nouns.out('array'),
       length: nouns.list.length
     }
     });

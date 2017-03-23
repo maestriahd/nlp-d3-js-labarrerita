@@ -1,13 +1,71 @@
 <h1>NLP</h1>
 
+
+
+<div id="viz"></div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script type="text/javascript">
+(function (){
+  function map(input, re1, re2, rs1, rs2){
+    return ((input-re1)/(re2 - re1))*(rs2 - rs1)+re1
+
+  }
+
+function viz(data){
+var svg = d3.select('#viz')
+.append('svg')
+.attr('width', 600)
+.attr('height', 800)
+
+var group = svg.selectAll('g')
+.data(data)
+
+var elemEnter = group.enter()
+.append('g')
+.attr('transform', function(d,i){
+  var x = map(d.count, 0,3000,0,600 )
+  var y = x
+  return "translate(" + x + ", "+ y +")"
+
+} )
+var circulo= elemEnter.append('circle')
+
+.attr('fill', function(d){
+  if(d.name === 'sustantivos'){
+    return 'green'
+  }
+  if(d.name === 'personas'){
+    return 'blue'
+  }
+} )
+.attr('r',  function(d, i){
+  return map(d.count, 0,3000,0,600 );
+ } )
+}
+var data = [ {
+  count: {{nouns.length }},
+  name: 'sustantivos'
+
+},
+{
+  count: {{people.length }},
+  name: 'personas'
+}
+]
+
+viz(data);
+
+})();
+
+</script>
+
 <!-- presenta la lista de sustantivos -->
 <h1>Sustantivos [{{nouns.length}}]</h1>
 <ul>
   {{#each nouns.list}}
   <li>
-    {{#each this.terms}}
-      {{this.text}}
-    {{/each}}
+      {{this}}
   </li>
   {{/each}}
 </ul>
@@ -15,11 +73,9 @@
 <!-- presenta la lista de personas -->
 <h1>Personas [{{people.length}}]</h1>
 <ul>
-  {{#each people.list}}
+{{#each people.list}}
   <li>
-    {{#each this.terms}}
-      {{this.text}}
-    {{/each}}
+      {{this}}
   </li>
   {{/each}}
 </ul>
